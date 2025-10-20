@@ -14,7 +14,7 @@ export function About() {
             <h3 className="font-bold mb-2 text-white">経歴</h3>
             <ul className="list-disc list-inside text-zinc-400">
               <li>専門学校 Webデザイン科 卒業</li>
-              <li>Web制作会社 Webエンジニア（2020-現在）</li>
+              <li>株式会社ミツエーリンクス Webエンジニア&UIデザイナー（2020-現在）</li>
             </ul>
           </div>
         </div>
