@@ -25,7 +25,7 @@ export function Projects() {
       category: "Design & Web Development",
       period: "現在制作中",
       // url: "https://css-style-maker.com/",
-      image: "/docs/images/projects/projects-03.webp"
+      image: "./images/projects/projects-03.webp"
     },
     {
       title: "Web制作者のための簡単CSSツール 「CSS Generator」",
@@ -34,7 +34,7 @@ export function Projects() {
       category: "Design & Web Development",
       period: "2025.05~2025.06",
       url: "https://css-style-maker.com/",
-      image: "/docs/images/projects/projects-02.webp"
+      image: "./images/projects/projects-02.webp"
     },
     {
       title: "コーポレートサイト開発",
@@ -43,7 +43,7 @@ export function Projects() {
       category: "Web Development",
       period: "2024.10~2025.01",
       url: "https://naitozouen.com/",
-      image: "/docs/images/projects/projects-01.webp"
+      image: "./images/projects/projects-01.webp"
     },
   ];
 
