@@ -1,0 +1,365 @@
+{
+  "posts": [
+    {
+      "id": "typescript-essential-techniques-2025",
+      "title": "TypeScript必須テクニック2025年版：現場で使える実践的な型定義とパターン",
+      "description": "2025年のTypeScript開発に欠かせない実践的なテクニックと、よくあるエラーの解決方法を詳しく解説します。実務で即活用できる型定義パターンから、パフォーマンス最適化まで徹底的に解説します。",
+      "date": "2025.01.28",
+      "category": "TypeScript",
+      "image": "/images/blog/typescript-essential-techniques-2025/typescript-essential-techniques-2025.webp",
+      "content": [
+        {
+          "type": "toc",
+          "content": [
+            "はじめに",
+            "TypeScript 5.7の注目の新機能",
+            "実践的な型定義パターン",
+            "高度な型テクニック",
+            "エラー処理のベストプラクティス",
+            "パフォーマンス最適化",
+            "React×TypeScriptの実践テクニック",
+            "まとめ"
+          ]
+        },
+        {
+          "type": "h2",
+          "content": "はじめに"
+        },
+        {
+          "type": "p",
+          "content": "みなさん、こんにちは！今回は2024年のTypeScriptで押さえておくべき実践的なテクニックについて、詳しく解説していきます。私自身、日々の開発で「あ、これ知っておけば良かった！」というポイントをたくさん経験してきたので、それらを惜しみなく共有させていただきますね。"
+        },
+        {
+          "type": "p",
+          "content": "特に、型システムの奥深さに悩まされている方や、「any型の誘惑」と戦っている方に役立つ内容になっているはずです。実際のプロジェクトで使えるコードを中心に、できるだけ分かりやすく説明していきますので、最後までお付き合いください！"
+        },
+        {
+          "type": "h2",
+          "content": "TypeScript 5.7の注目の新機能"
+        },
+        {
+          "type": "p",
+          "content": "まずは、TypeScript 5.7で登場した新機能から見ていきましょう。今回のアップデートには、開発効率を大きく向上させる機能がたくさん含まれているんです！特に注目の機能を紹介していきますね。"
+        },
+        {
+          "type": "h3",
+          "content": "1. 配列のLength制限"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "content": "// 配列の長さに制限を設定できるように！\ntype ShortArray = [number, ...number[]] & { length: 1 | 2 | 3 };\n\nconst valid: ShortArray = [1, 2];     // OK\nconst invalid: ShortArray = [1, 2, 3, 4]; // Error: 長さは1-3まで"
+        },
+        {
+          "type": "h3",
+          "content": "2. Getter/Setterの型改善"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "content": "class Counter {\n  #value = 0;\n\n  // getterとsetterで異なる型が使えるように！\n  get value(): number {\n    return this.#value;\n  }\n\n  set value(v: number | string) {\n    this.#value = Number(v);\n  }\n}"
+        },
+        {
+          "type": "h3",
+          "content": "3. NaN型のサポート"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "content": "// NaNをより厳密に扱えるように\nfunction handleNumber(value: number) {\n  if (Number.isNaN(value)) {\n    value; // 型がNaNとして認識される！\n    return;\n  }\n  value; // NaNではない数値として認識\n}"
+        },
+        {
+          "type": "p",
+          "content": "これらの新機能、特に配列のLength制限は、APIのレスポンス制御やフォームのバリデーションで重宝しますよ。以前は自前でバリデーションを書く必要があったんですが、型レベルでこういった制約が書けるようになったのは本当に便利です！"
+        },
+        {
+          "type": "h2",
+          "content": "実践的な型定義パターン"
+        },
+        {
+          "type": "p",
+          "content": "さて、ここからが本題です！実際のプロジェクトで使える型定義パターンを紹介していきます。「え、こんな書き方があったの！？」というものばかりなので、要チェックですよ。"
+        },
+        {
+          "type": "p",
+          "content": "特に、DeepPartialパターンは本当におすすめです。設定ファイルの部分的な更新とか、APIのパッチリクエストの型定義とか、そういった場面で大活躍します。私も最初はPartialだけ使っていたんですが、ネストされたオブジェクトの型安全性が確保できずに悩んでいました。このパターンを知ってからは、その問題が完全に解決されましたね。"
+        },
+        {
+          "type": "h3",
+          "content": "実務でよく遭遇するエラーとその対処法"
+        },
+        {
+          "type": "p",
+          "content": "TypeScriptで開発していると、よく遭遇するエラーがありますよね。例えば、"
+        },
+        {
+          "type": "ul",
+          "content": [
+            "「Object is possibly 'undefined'」",
+            "「Type 'string | undefined' is not assignable to type 'string'」",
+            "「Property 'xxx' does not exist on type 'yyy'」"
+          ]
+        },
+        {
+          "type": "p",
+          "content": "これらのエラー、みなさんも見覚えがあるのではないでしょうか？実は、これらのエラーは適切な型定義とバリデーションを組み合わせることで、エレガントに解決できるんです。それぞれのエラーについて、具体的な解決策を見ていきましょう！"
+        },
+        {
+          "type": "h4",
+          "content": "1. Object is possibly 'undefined'への対処"
+        },
+        {
+          "type": "p",
+          "content": "これは特にオプショナルチェーンを使う前によく見かけるエラーですよね。以下のような場合によく発生します。"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "content": "// エラーが発生するコード 😫\ntype User = {\n  address?: {\n    street: string;\n  };\n};\n\nfunction getStreet(user: User) {\n  return user.address.street; // Error: Object is possibly 'undefined'\n}\n\n// 解決策その1: オプショナルチェーンを使用 😊\nfunction getStreetSafe1(user: User) {\n  return user.address?.street; // OK: undefined を返す可能性がある\n}\n\n// 解決策その2: 型ガードを使用 😎\nfunction getStreetSafe2(user: User) {\n  if (user.address) {\n    return user.address.street; // OK: 型が絞り込まれている\n  }\n  return 'No address found';\n}"
+        },
+        {
+          "type": "h4",
+          "content": "2. Type 'string | undefined' is not assignable to type 'string'への対処"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "content": "// エラーが発生するコード 😫\nfunction greet(name?: string) {\n  const displayName: string = name; // Error!\n}\n\n// 解決策その1: デフォルト値を使用 😊\nfunction greetSafe1(name = 'Guest') {\n  const displayName: string = name; // OK\n  return `Hello, ${displayName}`;\n}\n\n// 解決策その2: Nullish coalescing operatorを使用 😎\nfunction greetSafe2(name?: string) {\n  const displayName: string = name ?? 'Guest'; // OK\n  return `Hello, ${displayName}`;\n}\n\n// 解決策その3: アサーションを使用（確実な場合のみ！）🚀\nfunction greetSafe3(name?: string) {\n  const displayName = name!; // 本当に undefined でないことが確実な場合のみ\n  return `Hello, ${displayName}`;\n}"
+        },
+        {
+          "type": "h4",
+          "content": "3. Property 'xxx' does not exist on type 'yyy'への対処"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "content": "// エラーが発生するコード 😫\ntype Animal = {\n  name: string;\n};\n\nconst dog: Animal = {\n  name: 'Pochi',\n  bark: () => 'Woof!' // Error: Property 'bark' does not exist on type 'Animal'\n};\n\n// 解決策その1: インターフェースの拡張 😊\ninterface Dog extends Animal {\n  bark: () => string;\n}\n\nconst goodDog: Dog = {\n  name: 'Pochi',\n  bark: () => 'Woof!' // OK\n};\n\n// 解決策その2: 型ガードとユーザー定義の型プレディケートを使用 😎\nfunction isDog(animal: Animal): animal is Dog {\n  return 'bark' in animal;\n}\n\nfunction makeAnimalSpeak(animal: Animal) {\n  if (isDog(animal)) {\n    return animal.bark(); // OK: 型が Dog として認識される\n  }\n  return 'This animal cannot bark';\n}"
+        },
+        {
+          "type": "p",
+          "content": "これらのエラーに対する解決策は、単にエラーを解消するだけでなく、コードの品質も向上させることができます。特に型ガードを使用する方法は、実行時の安全性も確保できるので、私のお気に入りです！"
+        },
+        {
+          "type": "p",
+          "content": "また、これらのパターンを組み合わせることで、より堅牢なコードを書くことができます。例えば、APIレスポンスの型チェックなどで、これらのテクニックを組み合わせて使うことが多いですね。"
+        },
+        {
+          "type": "h2",
+          "content": "パフォーマンス最適化のコツ"
+        },
+        {
+          "type": "p",
+          "content": "型定義って、書き方次第でビルド時間に大きな影響を与えるんです。特に大規模なプロジェクトだと、その違いが顕著に出てきます。例えば、インデックス型を使う際は、できるだけReadonlyを活用するのがおすすめです。これだけでもビルド時間が数秒短縮できることもありますよ。"
+        },
+        {
+          "type": "h2",
+          "content": "React×TypeScriptの実践テクニック"
+        },
+        {
+          "type": "p",
+          "content": "Reactと組み合わせる時のTypeScriptって、最初は本当に悩みますよね。特にイベントハンドラーの型定義とか、useStateの型パラメータとか...。でも、いくつかのパターンを押さえておけば、だいぶ楽になります！"
+        },
+        {
+          "type": "p",
+          "content": "例えば、ButtonPropsの型定義。これ、単純そうに見えて奥が深いんです。HTMLButtonElementの属性を継承しつつ、独自のプロパティを追加する...というのは、よくあるパターンですよね。でも、ただ交差型（&）で結合するだけじゃなくて、Omitを使って重複するプロパティを適切に処理するのがポイントです。"
+        },
+        {
+          "type": "h2",
+          "content": "まとめ"
+        },
+        {
+          "type": "p",
+          "content": "いかがでしたか？TypeScriptって最初は「めんどくさい」って思いがちですが、使いこなせるようになると本当に開発が楽しくなりますよ。型の恩恵を受けながら、スピーディーな開発を実現する...それこそが現代のTypeScript開発の醍醐味だと思います。\n\nこの記事で紹介したテクニックは、すぐに実践できるものばかりです。"
+        },
+        {
+          "type": "p",
+          "content": "それでは、Happy TypeScripting! 🚀✨"
+        }
+      ]
+    },
+    {
+      "id": "css-custom-properties-grid",
+      "title": "CSSカスタムプロパティを活用したグリッドレイアウトの柔軟な制御",
+      "description": "CSSのカスタムプロパティを使用してグリッドのカラム数を動的に制御する方法について解説します。",
+      "date": "2025.01.27",
+      "category": "CSS",
+      "image": "/images/blog/css-custom-properties-grid/css-custom-properties-grid.webp",
+      "content": [
+        {
+          "type": "toc",
+          "content": [
+            "はじめに",
+            "カスタムプロパティとグリッドの組み合わせ",
+            "実装方法",
+            "メリットとデメリット",
+            "まとめ"
+          ]
+        },
+        {
+          "type": "h2",
+          "content": "はじめに"
+        },
+        {
+          "type": "p",
+          "content": "CSSのグリッドレイアウトは、Webページのレイアウトを構築する上で非常に強力なツールです。さらにカスタムプロパティ（CSS変数）と組み合わせることで、より柔軟なレイアウト制御が可能になります。"
+        },
+        {
+          "type": "h2",
+          "content": "カスタムプロパティとグリッドの組み合わせ"
+        },
+        {
+          "type": "p",
+          "content": "カスタムプロパティを使用することで、HTMLの属性からグリッドのカラム数を制御できます。これにより、CSSファイルを修正することなく、レイアウトの調整が可能になります。"
+        },
+        {
+          "type": "h2",
+          "content": "実装方法"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "content": "<div class=\"grid\" style=\"--col-wide: 3; --col-narrow: 1;\">\n  <!-- グリッドアイテム -->\n</div>"
+        },
+        {
+          "type": "code",
+          "language": "css",
+          "content": ".grid {\n  display: grid;\n  grid-template-columns: repeat(var(--col-wide), 1fr);\n}\n\n@media (max-width: 768px) {\n  .grid {\n    grid-template-columns: repeat(var(--col-narrow), 1fr);\n  }\n}"
+        },
+        {
+          "type": "h2",
+          "content": "メリットとデメリット"
+        },
+        {
+          "type": "h3",
+          "content": "メリット"
+        },
+        {
+          "type": "ul",
+          "content": [
+            "CSSファイルを修正せずにカラム数を変更可能",
+            "レイアウトの機能に高い汎用性がある",
+            "コンポーネントの再利用性が向上する",
+            "メディアクエリとの組み合わせが容易"
+          ]
+        },
+        {
+          "type": "h3",
+          "content": "デメリット"
+        },
+        {
+          "type": "ul",
+          "content": [
+            "チームメンバーへの説明が必要",
+            "慣れていない開発者には理解が難しい可能性がある",
+            "HTMLにスタイルを直接書くことへの抵抗感がある場合も"
+          ]
+        },
+        {
+          "type": "h2",
+          "content": "まとめ"
+        },
+        {
+          "type": "p",
+          "content": "CSSカスタムプロパティを活用したグリッドレイアウトの制御は、柔軟性と再利用性を両立する優れた手法です。ただし、チーム開発では適切なドキュメント化と説明が重要になります。この手法を効果的に活用することで、より保守性の高いCSSコードを書くことができます。"
+        }
+      ]
+    },
+    {
+      "id": "vercel-v0-introduction",
+      "title": "Vercel v0: 次世代のAIコーディングアシスタント",
+      "description": "Vercelが発表した新しいAIコーディングアシスタント「v0」について、特徴や活用方法を詳しく解説します。",
+      "date": "2025.01.26",
+      "category": "AI",
+      "image": "/images/blog/vercel-v0-introduction/vercel-v0-introduction.jpg",
+      "content": [
+        {
+          "type": "toc",
+          "content": [
+            "Vercel v0とは",
+            "Vercel v0の特徴",
+            "料金形態",
+            "活用事例",
+            "まとめ"
+          ]
+        },
+        {
+          "type": "h2",
+          "content": "Vercel v0とは"
+        },
+        {
+          "type": "p",
+          "content": "Vercel v0は、2024年2月にVercelが発表した次世代のAIコーディングアシスタントです。GitHubのCopilotと同様のAIコーディング支援ツールですが、より高度な機能と柔軟な対話性を備えています。特にフロントエンド開発に特化した機能を提供し、開発者の生産性を大幅に向上させることを目指しています。"
+        },
+        {
+          "type": "h2",
+          "content": "Vercel v0の特徴"
+        },
+        {
+          "type": "h3",
+          "content": "1. インテリジェントなコード生成"
+        },
+        {
+          "type": "p",
+          "content": "v0は単なるコード補完ツールではありません。プロジェクトのコンテキストを理解し、最適なコードを提案します。例えば、既存のコードベースのスタイルに合わせたコードを生成したり、プロジェクトで使用されているライブラリやフレームワークに基づいた提案を行います。"
+        },
+        {
+          "type": "h3",
+          "content": "2. 自然言語での対話"
+        },
+        {
+          "type": "p",
+          "content": "開発者は自然言語でv0と対話することができます。「このボタンをホバー時にアニメーションさせたい」といった要望を伝えるだけで、適切なコードを提案してくれます。また、提案されたコードについて質問したり、修正を依頼したりすることも可能です。"
+        },
+        {
+          "type": "h3",
+          "content": "3. リアルタイムプレビュー"
+        },
+        {
+          "type": "p",
+          "content": "v0の特筆すべき機能の1つが、コード変更のリアルタイムプレビューです。提案されたコードの変更がどのように表示されるかを即座に確認できるため、試行錯誤の時間を大幅に短縮できます。"
+        },
+        {
+          "type": "h2",
+          "content": "料金形態"
+        },
+        {
+          "type": "p",
+          "content": "v0は現在ベータ版として提供されており、以下の料金プランが用意されています："
+        },
+        {
+          "type": "ul",
+          "content": [
+            "Pro: $20/月 - 個人開発者向け",
+            "Team: $40/ユーザー/月 - チーム開発向け",
+            "Enterprise: 要問い合わせ - カスタマイズ可能な法人向けプラン"
+          ]
+        },
+        {
+          "type": "h2",
+          "content": "活用事例"
+        },
+        {
+          "type": "p",
+          "content": "v0は様々な開発シーンで活用されています："
+        },
+        {
+          "type": "ul",
+          "content": [
+            "新規プロジェクトの迅速な立ち上げ - テンプレートコードの生成や基本構造の設計",
+            "既存コードのリファクタリング - より効率的で保守性の高いコードへの改善提案",
+            "UIコンポーネントの作成 - デザインシステムに基づいた一貫性のあるコンポーネント実装",
+            "バグ修正のサポート - エラーの原因特定と修正案の提示"
+          ]
+        },
+        {
+          "type": "h2",
+          "content": "まとめ"
+        },
+        {
+          "type": "p",
+          "content": "Vercel v0は、AIによるコーディング支援の新たな可能性を示すツールです。特にフロントエンド開発において、その効果を発揮します。自然な対話性とリアルタイムプレビュー機能により、開発者の思考プロセスをスムーズにコードへと変換できます。現在はベータ版ですが、今後の進化により、開発プロセスはさらに効率化されることが期待されます。"
+        }
+      ]
+    }
+  ]
+}
