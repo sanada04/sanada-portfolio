@@ -33,7 +33,7 @@ export function Projects() {
       technologies: ["Figma", "EJS", "Sass", "JavaScript"],
       category: "Design & Web Development",
       period: "2025.05~2025.06",
-      url: "https://css-style-maker.com/",
+      url: "https://sanada04.github.io/generator/",
       image: "./images/projects/projects-02.webp"
     },
     {
